@@ -1,0 +1,81 @@
+####### WEB SERVERS #############
+
+## Launch an Nginx Server in the Public Subnet
+Navigate to the EC2 Dashboard.
+Click on Launch Instance.
+Configure the instance:
+Name: NginxServer
+AMI: Select a suitable ubuntu
+Instance type: t2.micro
+Key pair: Select or create a key pair
+Network settings:
+VPC: MyVPC
+Subnet: PublicSubnet
+Auto-assign Public IP: Enable
+Security group: Create a new security group allowing HTTP (port 80) and SSH (port 22)
+Click Launch instance.
+
+
+#################################
+configure server
+#################################
+
+sudo apt update && sudo apt upgrade -y
+sudo apt install nginx -y
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+
+###################################
+configure custum service -- cofee shop code
+##################################
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee Shop</title>
+</head>
+<body>
+  <h1>Coffee Shop</h1>
+  <form id="coffee-form">
+    <input type="text" id="name" placeholder="Coffee Name" required>
+    <input type="text" id="description" placeholder="Description" required>
+    <button type="submit">Add Coffee</button>
+  </form>
+  <h2>Menu</h2>
+  <ul id="coffee-list"></ul>
+  <script>
+    document.getElementById('coffee-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const description = document.getElementById('description').value;
+      const response = await fetch('/api/coffees', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, description }),
+      });
+      const newCoffee = await response.json();
+      displayCoffees();
+    });
+
+    async function displayCoffees() {
+      const response = await fetch('/api/coffees');
+      const coffees = await response.json();
+      const coffeeList = document.getElementById('coffee-list');
+      coffeeList.innerHTML = '';
+      coffees.forEach(coffee => {
+        const li = document.createElement('li');
+        li.textContent = `${coffee.name}: ${coffee.description}`;
+        coffeeList.appendChild(li);
+      });
+    }
+
+    displayCoffees();
+  </script>
+</body>
+</html>
