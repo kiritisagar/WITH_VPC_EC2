@@ -1,0 +1,84 @@
+# Create a VPC
+Navigate to the VPC Dashboard.
+Click on Create VPC.
+Name tag: MyVPC
+IPv4 CIDR block: 10.0.0.0/16
+Tenancy: Default
+Click Create VPC.
+
+# Step 2: Create Subnets
+##Public Subnet
+Navigate to Subnets.
+Click on Create subnet.
+Name tag: PublicSubnet
+VPC: MyVPC
+Availability Zone: Select one (e.g., us-east-1a)
+IPv4 CIDR block: 10.0.1.0/24
+Click Create.
+
+## Private Subnet
+Navigate to Subnets.
+Click on Create subnet.
+Name tag: PrivateSubnet
+VPC: MyVPC
+Availability Zone: Select one (e.g., us-east-1a)
+IPv4 CIDR block: 10.0.2.0/24
+Click Create.
+
+#Step 3: Create Internet Gateway
+Navigate to Internet Gateways.
+Click on Create internet gateway.
+Name tag: MyInternetGateway
+Click Create.
+
+Attach the Internet Gateway to your VPC:
+Select the MyInternetGateway.
+Click Actions > Attach to VPC.
+Select MyVPC and click Attach internet gateway.
+
+#Step 4: Create a NAT Gateway
+Navigate to NAT Gateways.
+Click on Create NAT gateway.
+Subnet: PublicSubnet
+Elastic IP allocation ID: Allocate a new Elastic IP.
+Click Create NAT gateway.
+
+#Step 5: Create Route Tables
+##Public Route Table
+Navigate to Route Tables.
+Click on Create route table.
+Name tag: PublicRouteTable
+VPC: MyVPC
+Click Create.
+
+--Select the PublicRouteTable.
+Click on the Routes tab, then Edit routes.
+Destination: 0.0.0.0/0
+Target: Internet Gateway > MyInternetGateway
+Click Save routes.
+
+--Associate the Public Route Table with the Public Subnet:
+Click on the Subnet associations tab.
+Click Edit subnet associations.
+Select PublicSubnet.
+Click Save.
+
+##Private Route Table
+Navigate to Route Tables.
+Click on Create route table.
+Name tag: PrivateRouteTable
+VPC: MyVPC
+Click Create.
+
+--Select the PrivateRouteTable.
+Click on the Routes tab, then Edit routes.
+Destination: 0.0.0.0/0
+Target: NAT Gateway > MyNATGateway
+Click Save routes.
+
+--Associate the Private Route Table with the Private Subnet:
+Click on the Subnet associations tab.
+Click Edit subnet associations.
+Select PrivateSubnet.
+Click Save.
+
